@@ -35,7 +35,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { currentRole, currentUser, setRole, toasts, removeToast, addToast } = useTMSStore();
+  const { currentRole, currentUser, setRole, toasts, removeToast, addToast, initializeStore } = useTMSStore();
   
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -43,6 +43,13 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Hydrate store from API backend routes on portal entry
+  useEffect(() => {
+    if (currentRole) {
+      initializeStore();
+    }
+  }, [currentRole, initializeStore]);
 
   // 1. Guard check: Redirect to login if not logged in
   useEffect(() => {

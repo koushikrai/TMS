@@ -1,0 +1,251 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String
+  createdAt    DateTime @default(now())
+}
+
+model Vehicle {
+  id                 String              @id
+  sapEquipmentNo     String
+  category           String
+  ownership          String
+  vendorId           String?
+  plateNumber        String              @unique
+  make               String
+  model              String
+  year               Int
+  modelLevel         String?
+  status             String
+  gpsDeviceId        String?
+  lat                Float?
+  lng                Float?
+  lastUpdated        DateTime?
+  department         String?
+  costCenter         String?
+  maintenanceHistory MaintenanceRecord[]
+  documents          VehicleDocument[]
+  allocations        Allocation[]
+  drivers            Driver[]
+}
+
+model MaintenanceRecord {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  type        String
+  description String
+  date        String
+  cost        Float
+  status      String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model VehicleDocument {
+  id             String   @id @default(uuid())
+  vehicleId      String
+  type           String
+  documentNumber String
+  expiryDate     String
+  status         String
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Allocation {
+  id           String   @id @default(uuid())
+  vehicleId    String
+  employeeId   String
+  employeeName String
+  grade        String
+  department   String
+  costCenter   String
+  startDate    String
+  endDate      String?
+  status       String
+  vehicle      Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Driver {
+  id                String   @id
+  sapEmployeeNo     String
+  name              String
+  type              String
+  licenseNumber     String
+  licenseCategory   String
+  licenseExpiry     String
+  iqamaNumber       String
+  iqamaExpiry       String
+  insuranceExpiry   String
+  vehicleId         String?
+  performanceScore  Float
+  status            String
+  vehicle           Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+}
+
+model TransportRequest {
+  id                String         @id
+  type              String
+  requestorId       String
+  requestorName     String
+  department        String
+  costCenter        String
+  projectWBS        String?
+  pickupName        String
+  pickupLat         Float
+  pickupLng         Float
+  dropName          String?
+  dropLat           Float?
+  dropLng           Float?
+  scheduledDate     String
+  purpose           String
+  status            String
+  assignedVehicleId String?
+  assignedDriverId  String?
+  estimatedCost     Float?
+  actualCost        Float?
+  passengerCount    Int?
+  approvalChain     ApprovalStep[]
+}
+
+model ApprovalStep {
+  id          String           @id @default(uuid())
+  requestId   String
+  role        String
+  approverId  String?
+  approverName String?
+  status      String
+  updatedAt   String?
+  comments    String?
+  request     TransportRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}
+
+model Violation {
+  id                 String           @id
+  vehicleId          String
+  driverId           String?
+  type               String
+  source             String
+  capturedAt         String
+  status             String
+  description        String
+  evidence           String           // comma separated string of evidence urls or JSON
+  financialImpact    Float?
+  costCenter         String?
+  vendorPenalty      Float?
+  driverRecordImpact Boolean
+  lifecycle          ViolationEvent[]
+}
+
+model ViolationEvent {
+  id          String    @id @default(uuid())
+  violationId String
+  status      String
+  updatedBy   String
+  updatedAt   String
+  comments    String
+  violation   Violation @relation(fields: [violationId], references: [id], onDelete: Cascade)
+}
+
+model Route {
+  id                 String  @id
+  name               String
+  originName         String
+  originLat          Float
+  originLng          Float
+  destinationName    String
+  destinationLat     Float
+  destinationLng     Float
+  stopsJson          String  // JSON array string of Locations
+  distanceKm         Float
+  estDurationMinutes Float
+  occupancyHeatmap   String
+  complianceFlag     Boolean
+}
+
+model GeoZone {
+  id             String @id
+  name           String
+  type           String
+  coordinatesJson String // JSON array of coordinates {lat, lng}
+  radiusMeters   Float
+}
+
+model Vendor {
+  id                    String @id
+  sapVendorId           String
+  name                  String
+  contractValidityBadge String
+  contractExpiryDate    String
+  vehicleCount          Int
+  slaCompliance         Float
+  status                String
+}
+
+model RFQ {
+  id                 String   @id
+  title              String
+  description        String
+  createdDate        String
+  deadlineDate       String
+  status             String
+  eligibleVendorsJson String   // JSON array of vendor IDs
+  bids               Bid[]
+  selectedBidId      String?
+}
+
+model Bid {
+  id               String  @id
+  rfqId            String
+  vendorId         String
+  vendorName       String
+  rateSar          Float
+  eta              String
+  complianceScore  Float
+  historicalSla    Float
+  status           String
+  rfq              RFQ     @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+}
+
+model RateCard {
+  id              String @id
+  vendorId        String
+  vendorName      String
+  tripType        String
+  vehicleCategory String
+  baseRateSar     Float
+  perKmRateSar    Float
+  validFrom       String
+  validTo         String
+}
+
+model WorkflowDefinition {
+  id             String @id
+  name           String
+  module         String
+  status         String
+  lastModified   String
+  triggeredCount Int
+  version        Int
+  nodesJson      String // JSON representation of nodes
+  edgesJson      String // JSON representation of edges
+}
+
+model SystemAuditLog {
+  id        String   @id @default(uuid())
+  timestamp String
+  user      String
+  role      String
+  module    String
+  action    String
+  details   String
+}
