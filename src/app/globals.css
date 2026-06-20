@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Brand Teal & Action Blue */
+  --brand-teal: #006B6B;
+  --apple-blue: #0066cc;
+  --apple-blue-focus: #0071e3;
+  --apple-blue-dark: #2997ff;
+  
+  /* System State Colors */
+  --system-red: #ff3b30;
+  --system-orange: #ff9500;
+  --system-green: #34c759;
+  --system-gray: #8e8e93;
+  --system-purple: #af52de;
+  
+  /* Canvas & Backgrounds */
+  --background: #ffffff;                  /* systemBackground */
+  --background-secondary: #f5f5f7;        /* secondarySystemBackground */
+  --background-tertiary: #fafafc;         /* tertiarySystemBackground / Pearl */
+  --card-background: #ffffff;
+  
+  /* Inks & Text Colors */
+  --ink: #1d1d1f;                         /* near-black ink */
+  --ink-muted: #7a7a7a;                   /* ink-muted-48 */
+  --ink-muted-80: #333333;                /* ink-muted-80 */
+  
+  /* Borders */
+  --border-soft: #f0f0f0;
+  --border-hairline: #e0e0e0;
+  
+  /* Apple Dark Tile Surfaces */
+  --surface-tile-1: #272729;
+  --surface-tile-2: #2a2a2c;
+  --surface-tile-3: #252527;
+  --surface-black: #000000;
+  
+  /* Border Radii */
+  --apple-radius-sm: 8px;
+  --apple-radius-md: 12px;
+  --apple-radius-lg: 20px;
+  --apple-radius-pill: 9999px;
+  
+  /* Shadows */
+  --shadow-product: rgba(0, 0, 0, 0.12) 0px 10px 30px 0px;
+  --shadow-overlay: rgba(0, 0, 0, 0.08) 0px 4px 12px 0px;
+}
+
+/* Dark Mode Overrides (respecting Apple dark palette) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --background-secondary: #161617;
+    --background-tertiary: #1d1d1f;
+    --card-background: #1c1c1e;
+    
+    --ink: #f5f5f7;
+    --ink-muted: #86868b;
+    --ink-muted-80: #e8e8ed;
+    
+    --border-soft: #2c2c2e;
+    --border-hairline: #3a3a3c;
+  }
+}
+
+body {
+  color: var(--ink);
+  background: var(--background);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Scrollbar Customization for Sleek Look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hairline);
+  border-radius: var(--apple-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
+}
+
+/* Global Navigation and Layout Tweaks */
+.glass-effect {
+  background-color: rgba(245, 245, 247, 0.8) !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(20px) !important;
+}
+
+.glass-effect-dark {
+  background-color: rgba(39, 39, 41, 0.8) !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(20px) !important;
+}
+
+/* Arabic RTL logical property extensions */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Micro-animations and Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-loading {
+  background: linear-gradient(90deg, var(--border-soft) 25%, var(--border-hairline) 37%, var(--border-soft) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+/* Apple typography adjustments */
+.text-apple-tight {
+  letter-spacing: -0.02em;
+}
+
+.text-apple-hero {
+  letter-spacing: -0.025em;
+  line-height: 1.07;
+}
+
+/* Hover scales for modern interactive feedback */
+.hover-apple-card {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.hover-apple-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-product);
+}
+
+/* Button transitions */
+.btn-press-active:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+/* Reduced Motion preferences support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+
