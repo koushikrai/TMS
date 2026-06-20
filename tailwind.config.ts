@@ -14,6 +14,8 @@ const config: Config = {
         "background-secondary": "var(--background-secondary)",
         "background-tertiary": "var(--background-tertiary)",
         "card-background": "var(--card-background)",
+        white: "var(--white)",
+        black: "var(--black)",
         
         // Brand & System
         brand: {
