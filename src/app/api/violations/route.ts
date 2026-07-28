@@ -14,7 +14,7 @@ export async function GET() {
       return NextResponse.json(mockData.violations);
     }
     return NextResponse.json(dbViolations);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("DB not connected, falling back to mock violations data:", error.message);
     const mockData = generateSeedData();
     return NextResponse.json(mockData.violations);
@@ -43,11 +43,11 @@ export async function POST(request: Request) {
         }
       });
       return NextResponse.json({ success: true, violation: newVio });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB violation write failed, returning mock fallback:", e.message);
       return NextResponse.json({ success: true, violation: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
@@ -65,11 +65,11 @@ export async function PUT(request: Request) {
         }
       });
       return NextResponse.json({ success: true, violation: updatedVio });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB violation update failed, returning mock fallback:", e.message);
       return NextResponse.json({ success: true, violation: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

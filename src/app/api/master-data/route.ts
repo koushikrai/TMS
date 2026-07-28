@@ -48,7 +48,7 @@ export async function GET(request: Request) {
       }));
       return NextResponse.json(formatted);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn("DB not connected, falling back to mock master data:", error.message);
     const mockData = generateSeedData();
     const { searchParams } = new URL(request.url);
@@ -103,11 +103,11 @@ export async function POST(request: Request) {
         });
         return NextResponse.json({ success: true, geofence: newGeo });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB master-data POST failed, returning mock success:", e.message);
       return NextResponse.json({ success: true, data: payload });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

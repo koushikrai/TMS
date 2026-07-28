@@ -10,6 +10,9 @@ import {
 import Link from "next/link";
 import StatusBadge from "@/components/ui/StatusBadge";
 
+import AiFormAssistant from "@/components/ui/AiFormAssistant";
+import VoiceInputButton from "@/components/ui/VoiceInputButton";
+
 export default function HeavyMovementRequest() {
   const { addToast, vehicles } = useTMSStore();
   const [step, setStep] = useState(1);
@@ -17,6 +20,18 @@ export default function HeavyMovementRequest() {
   const [cargoHeight, setCargoHeight] = useState(4.2); // Meters
   const [wbsCode, setWbsCode] = useState("WBS-2026-JUBAIL-01");
   const [selectedVehId, setSelectedVehId] = useState<string | null>(null);
+
+  const handleHeavyAiExtract = (fields: Record<string, any>) => {
+    if (typeof fields.cargoWeight === "number") {
+      setCargoWeight(fields.cargoWeight);
+    }
+    if (typeof fields.cargoHeight === "number") {
+      setCargoHeight(fields.cargoHeight);
+    }
+    if (fields.wbsCode) {
+      setWbsCode(fields.wbsCode);
+    }
+  };
 
   // Permit validation simulation state
   const [isValidating, setIsValidating] = useState(false);
@@ -136,7 +151,17 @@ export default function HeavyMovementRequest() {
               exit={{ opacity: 0, x: -15 }}
               className="space-y-5"
             >
-              <h3 className="text-caption-strong font-semibold text-ink">Step 1 — Cargo Load & Destination Details</h3>
+              <h3 className="text-caption-strong font-semibold text-ink">Step 1 — Cargo Load &amp; Destination Details</h3>
+              
+              <AiFormAssistant
+                type="heavy"
+                sampleChips={[
+                  "28 ton Crane for SADARA site expansion next week",
+                  "Lowbed Trailer for 35 ton equipment movement to Jubail Port",
+                  "Heavy Truck for Jubail yard transfer"
+                ]}
+                onExtract={handleHeavyAiExtract}
+              />
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="space-y-1.5">

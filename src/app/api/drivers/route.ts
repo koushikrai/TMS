@@ -14,7 +14,7 @@ export async function GET() {
       return NextResponse.json(mockData.drivers);
     }
     return NextResponse.json(dbDrivers);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("DB not connected, falling back to mock driver data:", error.message);
     const mockData = generateSeedData();
     return NextResponse.json(mockData.drivers);
@@ -43,11 +43,11 @@ export async function POST(request: Request) {
         }
       });
       return NextResponse.json({ success: true, driver: newDrv });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB driver write failed, returning mock fallback:", e.message);
       return NextResponse.json({ success: true, driver: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

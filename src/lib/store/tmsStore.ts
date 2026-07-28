@@ -3,6 +3,9 @@ import {
   Vehicle, Driver, TransportRequest, Violation, Route, 
   Vendor, RateCard, WorkflowDefinition, SystemAuditLog, Toast
 } from '../types';
+
+export type { Toast };
+
 import { generateSeedData } from '../seed/dataGenerator';
 
 export type UserRole = 'EXEC' | 'TRANS_ADMIN' | 'FLEET_MGR' | 'DRIVER' | 'HR_DEPT' | 'FINANCE' | 'SYS_ADMIN';
@@ -36,7 +39,7 @@ interface TMSState {
   setCurrentUser: (user: UserProfile | null) => void;
   
   // Requests actions
-  addRequest: (req: Omit<TransportRequest, 'id' | 'status' | 'approvalChain' | 'requestorName'>) => Promise<void>;
+  addRequest: (req: Omit<TransportRequest, 'id' | 'status' | 'approvalChain'> & { requestorName?: string }) => Promise<void>;
   updateRequest: (id: string, updates: Partial<TransportRequest>) => Promise<void>;
   
   // Vehicle actions
@@ -121,7 +124,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         auditLogs: logsRes || initialSeed.auditLogs,
         initialized: true,
       });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("Store API hydration failed, using fallback seed data:", e.message);
       set({
         vehicles: initialSeed.vehicles,
@@ -168,7 +171,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newReq)
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API addRequest failed, kept in-memory:", err.message);
     }
   },
@@ -187,7 +190,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
           body: JSON.stringify({ ...existing, ...updates })
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API updateRequest failed:", err.message);
     }
   },
@@ -203,7 +206,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(vehicle)
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API addVehicle failed:", err.message);
     }
   },
@@ -219,7 +222,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates)
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API updateVehicle failed:", err.message);
     }
   },
@@ -235,7 +238,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, ...updates })
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API updateDriver failed:", err.message);
     }
   },
@@ -260,7 +263,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newVio)
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API addViolation failed:", err.message);
     }
   },
@@ -276,7 +279,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, ...updates })
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API updateViolation failed:", err.message);
     }
   },
@@ -292,7 +295,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(wf)
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API addWorkflow failed:", err.message);
     }
   },
@@ -311,7 +314,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
           body: JSON.stringify({ ...existing, ...updates })
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API updateWorkflow failed:", err.message);
     }
   },
@@ -345,7 +348,7 @@ export const useTMSStore = create<TMSState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newLog)
       });
-    } catch (err) {
+    } catch (err: any) {
       console.warn("API addAuditLog failed:", err.message);
     }
   }

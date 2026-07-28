@@ -21,7 +21,7 @@ export async function POST(request: Request) {
           }
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB Auth query failed, falling back to local auth:", e.message);
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         role: role
       }
     });
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

@@ -22,11 +22,11 @@ export async function PUT(
         }
       });
       return NextResponse.json({ success: true, vehicle: updatedVeh });
-    } catch (e) {
+    } catch (e: any) {
       console.warn(`DB vehicle update for ${id} failed, returning mock response:`, e.message);
       return NextResponse.json({ success: true, vehicle: { id, ...body } });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
@@ -42,11 +42,11 @@ export async function DELETE(
         where: { id: id }
       });
       return NextResponse.json({ success: true, message: `Vehicle ${id} deleted.` });
-    } catch (e) {
+    } catch (e: any) {
       console.warn(`DB vehicle delete for ${id} failed, returning mock success:`, e.message);
       return NextResponse.json({ success: true, message: `Vehicle ${id} deleted (mock).` });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

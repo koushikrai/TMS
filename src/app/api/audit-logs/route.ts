@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json(mockData.auditLogs);
     }
     return NextResponse.json(dbLogs);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("DB not connected, falling back to mock audit logs:", error.message);
     const mockData = generateSeedData();
     return NextResponse.json(mockData.auditLogs);
@@ -34,11 +34,11 @@ export async function POST(request: Request) {
         }
       });
       return NextResponse.json({ success: true, log: newLog });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB audit log write failed, returning mock success:", e.message);
       return NextResponse.json({ success: true, log: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

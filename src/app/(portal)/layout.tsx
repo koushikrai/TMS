@@ -20,6 +20,7 @@ interface SidebarItem {
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Command Center", href: "/dashboard", icon: LayoutDashboard, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "EXEC", "HR_DEPT", "FINANCE", "DRIVER"] },
+  { name: "POC 128 Hub", href: "/poc-128", icon: Compass, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "EXEC", "HR_DEPT", "FINANCE", "DRIVER"] },
   { name: "Light Vehicles", href: "/light-vehicles", icon: Car, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "HR_DEPT"] },
   { name: "Buses & Transport", href: "/buses", icon: Bus, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "HR_DEPT"] },
   { name: "Heavy & Equipment", href: "/heavy-vehicles", icon: Truck, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR"] },

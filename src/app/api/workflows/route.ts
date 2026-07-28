@@ -21,7 +21,7 @@ export async function GET() {
       edges: JSON.parse(w.edgesJson)
     }));
     return NextResponse.json(formatted);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("DB not connected, falling back to mock workflows:", error.message);
     const mockData = generateSeedData();
     return NextResponse.json(mockData.workflows);
@@ -46,11 +46,11 @@ export async function POST(request: Request) {
         }
       });
       return NextResponse.json({ success: true, workflow: newWf });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB workflow write failed, returning mock fallback:", e.message);
       return NextResponse.json({ success: true, workflow: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

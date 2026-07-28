@@ -17,7 +17,7 @@ export async function GET() {
       return NextResponse.json(mockData.vehicles);
     }
     return NextResponse.json(dbVehicles);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("DB not connected, falling back to mock seed data:", error.message);
     const mockData = generateSeedData();
     return NextResponse.json(mockData.vehicles);
@@ -49,11 +49,11 @@ export async function POST(request: Request) {
         }
       });
       return NextResponse.json({ success: true, vehicle: newVeh });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB write failed, simulation fallback:", e.message);
       return NextResponse.json({ success: true, vehicle: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

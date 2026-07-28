@@ -14,7 +14,7 @@ export async function GET() {
       return NextResponse.json(mockData.requests);
     }
     return NextResponse.json(dbRequests);
-  } catch (error) {
+  } catch (error: any) {
     console.warn("DB not connected, falling back to mock requests data:", error.message);
     const mockData = generateSeedData();
     return NextResponse.json(mockData.requests);
@@ -51,11 +51,11 @@ export async function POST(request: Request) {
         }
       });
       return NextResponse.json({ success: true, request: newReq });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB request write failed, returning mock fallback:", e.message);
       return NextResponse.json({ success: true, request: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
@@ -74,11 +74,11 @@ export async function PUT(request: Request) {
         }
       });
       return NextResponse.json({ success: true, request: updatedReq });
-    } catch (e) {
+    } catch (e: any) {
       console.warn("DB request update failed, returning mock fallback:", e.message);
       return NextResponse.json({ success: true, request: data });
     }
-  } catch (err) {
+  } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

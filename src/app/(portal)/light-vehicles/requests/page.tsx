@@ -11,6 +11,9 @@ import StatusBadge from "@/components/ui/StatusBadge";
 
 type RequestTab = 'permanent' | 'temporary' | 'trip';
 
+import AiFormAssistant from "@/components/ui/AiFormAssistant";
+import VoiceInputButton from "@/components/ui/VoiceInputButton";
+
 export default function VehicleRequestHub() {
   const { addRequest, addToast, vehicles } = useTMSStore();
   const [activeTab, setActiveTab] = useState<RequestTab>('permanent');
@@ -19,6 +22,26 @@ export default function VehicleRequestHub() {
   const [justification, setJustification] = useState("");
   const [tripDate, setTripDate] = useState("");
   const [purpose, setPurpose] = useState("Operational Site Audit");
+
+  const handleAiExtract = (fields: Record<string, any>) => {
+    if (fields.purpose) {
+      setPurpose(fields.purpose);
+      setJustification(fields.purpose);
+    }
+    if (fields.scheduledDate) {
+      setTripDate(fields.scheduledDate);
+    }
+    if (fields.issuanceCategory === "Permanent") {
+      setActiveTab("permanent");
+    } else if (fields.issuanceCategory === "Temporary") {
+      setActiveTab("temporary");
+    }
+    if (Array.isArray(fields.vehicleTypes) && fields.vehicleTypes.length > 0) {
+      const type = fields.vehicleTypes[0];
+      if (type === "SUV" || type === "Luxury") setEmployeeGrade("M1");
+      else if (type === "Sedan") setEmployeeGrade("M2");
+    }
+  };
 
   // Smart allocation states
   const [isSuggesting, setIsSuggesting] = useState(false);
@@ -134,6 +157,17 @@ export default function VehicleRequestHub() {
         {/* Forms column (left 2/3) */}
         <div className="lg:col-span-2 space-y-6">
           
+          {/* AI & Voice Form Assistant Panel */}
+          <AiFormAssistant
+            type="light"
+            sampleChips={[
+              "Sedan for 1 month starting tomorrow for Jubail site visits",
+              "SUV permanent for Senior Operations Lead",
+              "Pickup for emergency site visits in Dammam"
+            ]}
+            onExtract={handleAiExtract}
+          />
+
           <form onSubmit={handleSubmit} className="bg-white border border-border-soft rounded-apple-lg p-6 shadow-overlay space-y-5">
             <h3 className="text-caption-strong font-semibold text-ink">Request Configurations</h3>
             
@@ -144,9 +178,9 @@ export default function VehicleRequestHub() {
                 <input 
                   type="text"
                   required
+                  readOnly
                   className="w-full px-3 py-2 bg-background-secondary border border-border-hairline rounded-apple-sm text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none text-ink font-semibold"
                   value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
                 />
               </div>
 
@@ -183,7 +217,12 @@ export default function VehicleRequestHub() {
             {/* Tab specific fields */}
             {activeTab === 'permanent' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-ink">Justification for Permanent Use</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-ink">Justification for Permanent Use</label>
+                  <VoiceInputButton
+                    onTranscript={(t) => setJustification((prev) => (prev ? `${prev} ${t}` : t))}
+                  />
+                </div>
                 <textarea
                   required
                   rows={3}
@@ -198,7 +237,7 @@ export default function VehicleRequestHub() {
             {activeTab === 'temporary' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-ink">Start & End Date</label>
+                  <label className="text-xs font-semibold text-ink">Start &amp; End Date</label>
                   <input
                     type="date"
                     required
@@ -208,7 +247,12 @@ export default function VehicleRequestHub() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-ink">Temporary Allocation Purpose</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-ink">Temporary Allocation Purpose</label>
+                    <VoiceInputButton
+                      onTranscript={(t) => setPurpose((prev) => (prev ? `${prev} ${t}` : t))}
+                    />
+                  </div>
                   <input
                     type="text"
                     required
