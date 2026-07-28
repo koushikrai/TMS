@@ -4,18 +4,20 @@ import React, { useState } from "react";
 import { useTMSStore } from "@/lib/store/tmsStore";
 import VehicleCard from "@/components/ui/StatusBadge"; // Wait, we should import VehicleCard!
 import { motion, AnimatePresence } from "framer-motion";
-import { Grid, List, Search, Plus, ArrowRight, ShieldCheck, Car } from "lucide-react";
+import { Grid, List, Search, Plus, ArrowRight, ShieldCheck, Car, Zap, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import VehicleCardComponent from "@/components/ui/VehicleCard";
 import StatusBadge from "@/components/ui/StatusBadge";
 
 export default function LightVehiclesOverview() {
-  const { vehicles } = useTMSStore();
+  const { vehicles, currentRole } = useTMSStore();
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [ownershipFilter, setOwnershipFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const isAdminOrFleet = currentRole === "FLEET_MGR" || currentRole === "TRANS_ADMIN" || currentRole === "SYS_ADMIN";
 
   // Filter light vehicles only (SUV, Sedan, SmallSUV)
   const lvList = vehicles.filter(v => 
@@ -43,7 +45,27 @@ export default function LightVehiclesOverview() {
           <h1 className="text-display-md text-ink font-semibold tracking-tight text-apple-tight">Light Vehicle Management</h1>
           <p className="text-caption text-ink-muted mt-1">Request allocations, review assignments, and manage light logistics fleet</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2.5">
+          {isAdminOrFleet && (
+            <>
+              <Link
+                href="/light-vehicles/auto-allocation"
+                className="h-10 px-4 bg-brand-teal text-white hover:bg-[#005a5a] rounded-apple-pill text-xs font-semibold flex items-center gap-1.5 transition-all btn-press-active shadow-overlay"
+              >
+                <Zap className="h-4 w-4 text-brand-yellow" />
+                <span>⚡ Smart Auto-Allocation Engine</span>
+              </Link>
+
+              <Link
+                href="/light-vehicles/asset-intelligence"
+                className="h-10 px-4 bg-white border border-border-soft hover:border-brand-teal text-ink rounded-apple-pill text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+              >
+                <TrendingUp className="h-4 w-4 text-brand-teal" />
+                <span>Sell/Keep AI Model</span>
+              </Link>
+            </>
+          )}
+
           <Link
             href="/light-vehicles/requests"
             className="h-10 px-4 bg-brand-teal text-white hover:bg-[#005a5a] rounded-apple-pill text-xs font-semibold flex items-center gap-1.5 transition-all btn-press-active shadow-overlay"

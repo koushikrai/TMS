@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Compass, LayoutDashboard, Car, Bus, Truck, Users, 
   AlertTriangle, Briefcase, FileSpreadsheet, GitFork, 
-  BarChart3, Settings, LogOut, Search, Bell, X, ChevronRight, ChevronDown, CheckCircle, Info, Menu
+  BarChart3, Settings, LogOut, Search, Bell, X, ChevronRight, ChevronDown, CheckCircle, Info, Menu, Zap
 } from "lucide-react";
 import Link from "next/link";
 
@@ -19,9 +19,10 @@ interface SidebarItem {
 }
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
-  { name: "Command Center", href: "/dashboard", icon: LayoutDashboard, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "EXEC", "HR_DEPT", "FINANCE", "DRIVER"] },
-  { name: "POC 128 Hub", href: "/poc-128", icon: Compass, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "EXEC", "HR_DEPT", "FINANCE", "DRIVER"] },
-  { name: "Light Vehicles", href: "/light-vehicles", icon: Car, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "HR_DEPT"] },
+  { name: "Command Center", href: "/dashboard", icon: LayoutDashboard, roles: ["EMPLOYEE", "SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "EXEC", "HR_DEPT", "FINANCE", "DRIVER"] },
+  { name: "POC 128 Hub", href: "/poc-128", icon: Compass, roles: ["EMPLOYEE", "SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "EXEC", "HR_DEPT", "FINANCE", "DRIVER"] },
+  { name: "Light Vehicles", href: "/light-vehicles", icon: Car, roles: ["EMPLOYEE", "SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "HR_DEPT"] },
+  { name: "Auto-Allocation Engine", href: "/light-vehicles/auto-allocation", icon: Zap, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR"] },
   { name: "Buses & Transport", href: "/buses", icon: Bus, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "HR_DEPT"] },
   { name: "Heavy & Equipment", href: "/heavy-vehicles", icon: Truck, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR"] },
   { name: "Driver Profiles", href: "/drivers", icon: Users, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "DRIVER"] },
@@ -30,7 +31,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Master Data Hub", href: "/master-data", icon: FileSpreadsheet, roles: ["SYS_ADMIN", "TRANS_ADMIN"] },
   { name: "Workflow Builder", href: "/workflows", icon: GitFork, roles: ["SYS_ADMIN"] },
   { name: "KPI & Analytics", href: "/reports", icon: BarChart3, roles: ["SYS_ADMIN", "TRANS_ADMIN", "EXEC", "FINANCE"] },
-  { name: "System Settings", href: "/settings", icon: Settings, roles: ["SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "HR_DEPT", "FINANCE", "DRIVER"] }
+  { name: "System Settings", href: "/settings", icon: Settings, roles: ["EMPLOYEE", "SYS_ADMIN", "TRANS_ADMIN", "FLEET_MGR", "HR_DEPT", "FINANCE", "DRIVER"] }
 ];
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
@@ -341,6 +342,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
                     <div className="max-h-72 overflow-y-auto py-1">
                       {[
+                        { role: "EMPLOYEE" as UserRole, label: "Employee Requestor", name: "Tariq Al-Mansoor", icon: "👤" },
                         { role: "SYS_ADMIN" as UserRole, label: "System Admin", name: "Yousef Al-Harbi", icon: "⚡" },
                         { role: "TRANS_ADMIN" as UserRole, label: "Transport Admin", name: "Saleh Al-Omari", icon: "📋" },
                         { role: "FLEET_MGR" as UserRole, label: "Fleet Manager", name: "Fahad Al-Qahtani", icon: "🚚" },

@@ -22,7 +22,7 @@ interface AlertFeedItem {
 }
 
 export default function DashboardPage() {
-  const { vehicles, requests, violations, vendors } = useTMSStore();
+  const { vehicles, requests, violations, vendors, currentRole, currentUser } = useTMSStore();
   const [alertFilter, setAlertFilter] = useState<"all" | "critical" | "warning" | "info">("all");
 
   // 1. Calculations for KPIs
@@ -83,31 +83,115 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex justify-between items-center">
+      
+      {/* Page Title & Persona Banner */}
+      <div className="bg-white border border-border-soft rounded-apple-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-display-md text-ink font-semibold tracking-tight text-apple-tight">Command Center</h1>
-          <p className="text-caption text-ink-muted mt-1">Real-time status overview of Expertise CJSC fleet operations</p>
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-apple-pill bg-brand-teal/10 text-brand-teal text-xs font-mono font-bold">
+              Active Role Persona: {currentRole || "SYS_ADMIN"}
+            </span>
+            <span className="text-xs text-brand-blue font-semibold flex items-center gap-1">
+              <CheckCircle className="h-3.5 w-3.5" /> Logged in as {currentUser?.name || "Yousef Al-Harbi"}
+            </span>
+          </div>
+          <h1 className="text-display-md text-ink font-semibold tracking-tight text-apple-tight mt-1">
+            {currentRole === "EMPLOYEE" && "Employee Mobility & AI Request Portal"}
+            {currentRole === "DRIVER" && "Driver Mobile Portal & Duty Status"}
+            {currentRole === "FINANCE" && "Financial Audit & Cross-Charge Portal"}
+            {currentRole === "HR_DEPT" && "HR Employee Mobility & Roster Command"}
+            {currentRole === "EXEC" && "Executive Strategic ROI Command Center"}
+            {currentRole === "FLEET_MGR" && "Fleet Operations & Maintenance Command"}
+            {(currentRole === "TRANS_ADMIN" || currentRole === "SYS_ADMIN" || !currentRole) && "Command Center"}
+          </h1>
+          <p className="text-caption text-ink-muted mt-1">
+            {currentRole === "EMPLOYEE" && "Create AI-assisted transport requests, dictating via voice or text, and track allocation statuses."}
+            {currentRole === "DRIVER" && "Track your assigned vehicle, active route navigation, duty hours, and clock-in status."}
+            {currentRole === "FINANCE" && "Review SAP MM/CO cross-charging, vendor rate cards, and transport cost center budgets."}
+            {currentRole === "HR_DEPT" && "Manage employee grade eligibility (M1/M2/M3), shift rosters, and transport overrides."}
+            {currentRole === "EXEC" && "Strategic fleet metrics, overall SLA performance scorecards, and ROI cost optimizations."}
+            {currentRole === "FLEET_MGR" && "Manage auto-allocations, vehicle breakdown alerts, hour meters, and SAP PM lockouts."}
+            {(currentRole === "TRANS_ADMIN" || currentRole === "SYS_ADMIN" || !currentRole) && "Real-time status overview of Expertise CJSC fleet operations."}
+          </p>
         </div>
-        <div className="flex gap-2">
-          <button className="h-10 px-4 border border-border-hairline rounded-apple-sm text-caption bg-background hover:bg-background-secondary transition-all font-semibold flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-ink-muted" />
-            <span>Operational Config</span>
-          </button>
+
+        {/* Persona Action Shortcut */}
+        <div className="flex items-center gap-2 shrink-0">
+          {currentRole === "EMPLOYEE" && (
+            <a href="/light-vehicles/requests" className="px-4 py-2 bg-brand-teal text-white text-xs font-semibold rounded-apple-pill shadow-sm hover:bg-brand-teal/90 flex items-center gap-1.5">
+              ✨ Create AI Request
+            </a>
+          )}
+          {currentRole === "DRIVER" && (
+            <span className="px-4 py-2 bg-brand-teal text-white text-xs font-semibold rounded-apple-pill shadow-sm">
+              🚗 Duty Status: ON DUTY (6.5 hrs)
+            </span>
+          )}
+          {currentRole === "FLEET_MGR" && (
+            <a href="/light-vehicles/auto-allocation" className="px-4 py-2 bg-brand-teal text-white text-xs font-semibold rounded-apple-pill shadow-sm hover:bg-brand-teal/90">
+              ⚡ Launch Auto-Allocation
+            </a>
+          )}
+          {currentRole === "FINANCE" && (
+            <a href="/vendors/rate-cards" className="px-4 py-2 bg-brand-blue text-white text-xs font-semibold rounded-apple-pill shadow-sm hover:bg-brand-blue/90">
+              💳 Inspect SAP Rate Cards
+            </a>
+          )}
+          {currentRole === "HR_DEPT" && (
+            <a href="/buses/capacity" className="px-4 py-2 bg-brand-teal text-white text-xs font-semibold rounded-apple-pill shadow-sm hover:bg-brand-teal/90">
+              🚌 View Bus Roster Capacity
+            </a>
+          )}
+          {currentRole === "EXEC" && (
+            <a href="/analytics/predictive-maintenance" className="px-4 py-2 bg-brand-teal text-white text-xs font-semibold rounded-apple-pill shadow-sm hover:bg-brand-teal/90">
+              📈 Predictive Asset Model
+            </a>
+          )}
         </div>
       </div>
 
       {/* 1. Live Map Tracker */}
       <LiveFleetMap />
 
-      {/* 2. 6-Card KPI Strip */}
+      {/* 2. Dynamic Role-Tailored KPI Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
-        <MetricTile title="Fleet Active Ratio" value={activeRatio} suffix="%" color="teal" delta="+2.1%" deltaType="positive" />
-        <MetricTile title="Active Trips Today" value={todayTrips} color="blue" delta="+12" deltaType="positive" />
-        <MetricTile title="Documents Expiring" value={expiringDocs} suffix=" docs" color="orange" delta="-3" deltaType="positive" />
-        <MetricTile title="Open Violations" value={openViolations} color="red" delta="+1" deltaType="negative" />
-        <MetricTile title="Average Vendor SLA" value={averageSLA} suffix="%" color="green" delta="+0.4%" deltaType="positive" />
-        <MetricTile title="Cross-Charges" value={totalCost} prefix="SAR " color="purple" delta="+8%" deltaType="positive" />
+        {currentRole === "EMPLOYEE" ? (
+          <>
+            <MetricTile title="Active Requests" value={1} suffix=" pending" color="teal" delta="Submitted" deltaType="positive" />
+            <MetricTile title="SAP Grade" value={2} suffix=" (Grade M2)" color="blue" delta="Operations Manager" deltaType="positive" />
+            <MetricTile title="Eligible Category" value={100} suffix="%" color="green" delta="Sedan / SUV" deltaType="positive" />
+            <MetricTile title="Past Trips" value={14} color="purple" delta="Completed" deltaType="positive" />
+            <MetricTile title="Default Hub" value={1} suffix=" (Jubail HQ)" color="teal" delta="Main Depot" deltaType="positive" />
+            <MetricTile title="AI Dictation Engine" value={100} suffix="%" color="green" delta="Web Speech Active" deltaType="positive" />
+          </>
+        ) : currentRole === "DRIVER" ? (
+          <>
+            <MetricTile title="Safety Score" value={94} suffix="/100" color="green" delta="+2 pts" deltaType="positive" />
+            <MetricTile title="Driving Hours" value={6.5} suffix=" hrs" color="teal" delta="3.5 hrs remaining" deltaType="positive" />
+            <MetricTile title="Active License" value={180} suffix=" days" color="blue" delta="Valid Iqama" deltaType="positive" />
+            <MetricTile title="Trips Completed" value={18} color="purple" delta="+3 this week" deltaType="positive" />
+            <MetricTile title="Assigned Fleet" value={2} suffix=" units" color="teal" delta="Camry KSA 8821" deltaType="positive" />
+            <MetricTile title="Fuel Log Card" value={100} suffix="%" color="green" delta="Petro APP" deltaType="positive" />
+          </>
+        ) : currentRole === "FINANCE" ? (
+          <>
+            <MetricTile title="Monthly Fleet Spend" value={348500} prefix="SAR " color="purple" delta="+4.2%" deltaType="negative" />
+            <MetricTile title="Cost Center Billing" value={142} suffix=" POs" color="blue" delta="SAP MM Synced" deltaType="positive" />
+            <MetricTile title="Vendor Rate Cards" value={12} color="teal" delta="Active tariffs" deltaType="positive" />
+            <MetricTile title="Vendor Penalties" value={14500} prefix="SAR " color="red" delta="SLA Deduction" deltaType="negative" />
+            <MetricTile title="Avg Vendor SLA" value={averageSLA} suffix="%" color="green" delta="+0.4%" deltaType="positive" />
+            <MetricTile title="Cross-Charges" value={totalCost} prefix="SAR " color="purple" delta="+8%" deltaType="positive" />
+          </>
+        ) : (
+          <>
+            <MetricTile title="Fleet Active Ratio" value={activeRatio} suffix="%" color="teal" delta="+2.1%" deltaType="positive" />
+            <MetricTile title="Active Trips Today" value={todayTrips} color="blue" delta="+12" deltaType="positive" />
+            <MetricTile title="Documents Expiring" value={expiringDocs} suffix=" docs" color="orange" delta="-3" deltaType="positive" />
+            <MetricTile title="Open Violations" value={openViolations} color="red" delta="+1" deltaType="negative" />
+            <MetricTile title="Average Vendor SLA" value={averageSLA} suffix="%" color="green" delta="+0.4%" deltaType="positive" />
+            <MetricTile title="Cross-Charges" value={totalCost} prefix="SAR " color="purple" delta="+8%" deltaType="positive" />
+          </>
+        )}
       </div>
 
       {/* 3. Three-Column Detailed Dashboard Grid */}

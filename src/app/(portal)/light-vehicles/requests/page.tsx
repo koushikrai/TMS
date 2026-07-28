@@ -15,13 +15,15 @@ import AiFormAssistant from "@/components/ui/AiFormAssistant";
 import VoiceInputButton from "@/components/ui/VoiceInputButton";
 
 export default function VehicleRequestHub() {
-  const { addRequest, addToast, vehicles } = useTMSStore();
+  const { addRequest, addToast, vehicles, currentRole } = useTMSStore();
   const [activeTab, setActiveTab] = useState<RequestTab>('permanent');
   const [employeeId, setEmployeeId] = useState("EMP-1002");
   const [employeeGrade, setEmployeeGrade] = useState("M2"); // M1, M2, M3
   const [justification, setJustification] = useState("");
   const [tripDate, setTripDate] = useState("");
   const [purpose, setPurpose] = useState("Operational Site Audit");
+
+  const isAdminOrFleet = currentRole === "FLEET_MGR" || currentRole === "TRANS_ADMIN" || currentRole === "SYS_ADMIN";
 
   const handleAiExtract = (fields: Record<string, any>) => {
     if (fields.purpose) {
@@ -91,7 +93,7 @@ export default function VehicleRequestHub() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedVehicleId) {
+    if (isAdminOrFleet && !selectedVehicleId) {
       addToast({
         type: "warning",
         title: "Vehicle Selection Required",
@@ -111,7 +113,7 @@ export default function VehicleRequestHub() {
       scheduledDate: tripDate || new Date().toISOString().split('T')[0],
       pickupLocation: { name: "Expertise HQ - Jubail", lat: 27.0112, lng: 49.6234 },
       dropLocation: { name: "SADARA Site", lat: 26.9112, lng: 49.4234 },
-      assignedVehicleId: selectedVehicleId
+      assignedVehicleId: selectedVehicleId || (vehicles[0]?.id || "LV-01")
     });
 
     setShowSuccessSheet(true);
@@ -285,20 +287,22 @@ export default function VehicleRequestHub() {
               </div>
             )}
 
-            {/* Smart Suggest triggering */}
-            <div className="border-t border-border-soft pt-4 flex flex-col sm:flex-row gap-3 justify-between items-center">
-              <div className="text-xs text-ink-muted">
-                <span>Select vehicle using the Smart Suggest Allocation Engine</span>
+            {/* Smart Suggest triggering (Admin & Fleet Manager Only) */}
+            {isAdminOrFleet && (
+              <div className="border-t border-border-soft pt-4 flex flex-col sm:flex-row gap-3 justify-between items-center">
+                <div className="text-xs text-ink-muted">
+                  <span>Select vehicle using the Smart Suggest Allocation Engine</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSmartSuggest}
+                  className="h-10 px-4 bg-background-secondary hover:bg-border-soft border border-border-soft rounded-apple-pill text-xs font-semibold flex items-center gap-1.5 transition-all btn-press-active text-ink"
+                >
+                  <Compass className="h-4 w-4 text-brand-teal animate-pulse" />
+                  <span>Smart Suggest Allocation</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleSmartSuggest}
-                className="h-10 px-4 bg-background-secondary hover:bg-border-soft border border-border-soft rounded-apple-pill text-xs font-semibold flex items-center gap-1.5 transition-all btn-press-active text-ink"
-              >
-                <Compass className="h-4 w-4 text-brand-teal animate-pulse" />
-                <span>Smart Suggest Allocation</span>
-              </button>
-            </div>
+            )}
 
             {/* Suggestions lists */}
             {isSuggesting && (

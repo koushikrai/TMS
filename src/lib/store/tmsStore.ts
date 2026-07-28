@@ -8,7 +8,7 @@ export type { Toast };
 
 import { generateSeedData } from '../seed/dataGenerator';
 
-export type UserRole = 'EXEC' | 'TRANS_ADMIN' | 'FLEET_MGR' | 'DRIVER' | 'HR_DEPT' | 'FINANCE' | 'SYS_ADMIN';
+export type UserRole = 'EMPLOYEE' | 'EXEC' | 'TRANS_ADMIN' | 'FLEET_MGR' | 'DRIVER' | 'HR_DEPT' | 'FINANCE' | 'SYS_ADMIN';
 
 export interface UserProfile {
   name: string;
@@ -68,6 +68,7 @@ interface TMSState {
 const initialSeed = generateSeedData();
 
 const roleUsers: Record<UserRole, UserProfile> = {
+  EMPLOYEE: { name: "Tariq Al-Mansoor", email: "t.mansoor@expertise.com.sa", sapEmployeeNo: "EMP-1088", role: "EMPLOYEE" },
   EXEC: { name: "Ahmed Al-Nasser", email: "a.nasser@expertise.com.sa", sapEmployeeNo: "EMP-1001", role: "EXEC" },
   TRANS_ADMIN: { name: "Saleh Al-Omari", email: "s.omari@expertise.com.sa", sapEmployeeNo: "EMP-1005", role: "TRANS_ADMIN" },
   FLEET_MGR: { name: "Fahad Al-Qahtani", email: "f.qahtani@expertise.com.sa", sapEmployeeNo: "EMP-1002", role: "FLEET_MGR" },
