@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Compass, LayoutDashboard, Car, Bus, Truck, Users, 
   AlertTriangle, Briefcase, FileSpreadsheet, GitFork, 
-  BarChart3, Settings, LogOut, Search, Bell, X, ChevronRight, CheckCircle, Info, Menu
+  BarChart3, Settings, LogOut, Search, Bell, X, ChevronRight, ChevronDown, CheckCircle, Info, Menu
 } from "lucide-react";
 import Link from "next/link";
 
@@ -42,6 +42,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [roleMenuOpen, setRoleMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -306,15 +307,82 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
               </AnimatePresence>
             </div>
 
-            {/* Profile Avatar & Role */}
-            <div className="flex items-center gap-3" aria-label="User profile">
-              <div className="hidden sm:flex flex-col text-right">
-                <span className="text-caption-strong font-semibold text-ink">{currentUser.name}</span>
-                <span className="text-[10px] uppercase font-bold text-brand-teal tracking-wider">{currentRole}</span>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-brand-teal text-white flex items-center justify-center font-semibold border border-border-soft">
-                {currentUser.name.charAt(0)}
-              </div>
+            {/* Profile Avatar & Interactive Quick Role Switcher Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setRoleMenuOpen(!roleMenuOpen)}
+                aria-label="Switch active demo user role"
+                aria-expanded={roleMenuOpen}
+                className="flex items-center gap-2.5 p-1.5 rounded-apple-pill border border-border-soft hover:border-brand-teal bg-background hover:bg-background-secondary transition-all cursor-pointer group"
+              >
+                <div className="hidden sm:flex flex-col text-right pr-1 select-none">
+                  <span className="text-caption-strong font-semibold text-ink leading-tight">{currentUser.name}</span>
+                  <span className="text-[9px] uppercase font-bold text-brand-teal tracking-wider">{currentRole}</span>
+                </div>
+                <div className="h-9 w-9 rounded-full bg-brand-teal text-white flex items-center justify-center font-bold text-xs shadow-overlay ring-2 ring-brand-teal/20 group-hover:scale-105 transition-transform">
+                  {currentUser.name.charAt(0)}
+                </div>
+                <ChevronDown className={`h-4 w-4 text-ink-muted group-hover:text-ink transition-transform ${roleMenuOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {/* Quick Role Switcher Dropdown Menu */}
+              <AnimatePresence>
+                {roleMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 12, scale: 0.96 }}
+                    className="absolute right-0 mt-2 w-72 bg-white border border-border-soft rounded-apple-lg shadow-product py-3 z-50 overflow-hidden"
+                  >
+                    <div className="px-4 pb-2 border-b border-border-soft flex items-center justify-between">
+                      <span className="text-xs font-bold text-ink-muted uppercase tracking-wider">Switch User Role</span>
+                      <span className="text-[10px] bg-brand-teal/10 text-brand-teal font-mono font-bold px-2 py-0.5 rounded">Demo Selector</span>
+                    </div>
+
+                    <div className="max-h-72 overflow-y-auto py-1">
+                      {[
+                        { role: "SYS_ADMIN" as UserRole, label: "System Admin", name: "Yousef Al-Harbi", icon: "⚡" },
+                        { role: "TRANS_ADMIN" as UserRole, label: "Transport Admin", name: "Saleh Al-Omari", icon: "📋" },
+                        { role: "FLEET_MGR" as UserRole, label: "Fleet Manager", name: "Fahad Al-Qahtani", icon: "🚚" },
+                        { role: "HR_DEPT" as UserRole, label: "HR Department", name: "Ali Al-Sudairy", icon: "👥" },
+                        { role: "FINANCE" as UserRole, label: "Finance & Billing", name: "Junaid Siddiqui", icon: "💳" },
+                        { role: "EXEC" as UserRole, label: "Executive Sponsor", name: "Ahmed Al-Nasser", icon: "👑" },
+                        { role: "DRIVER" as UserRole, label: "Driver", name: "Sultan Al-Otaibi", icon: "🚗" },
+                      ].map((r) => {
+                        const isSelected = currentRole === r.role;
+                        return (
+                          <button
+                            key={r.role}
+                            onClick={() => {
+                              setRole(r.role);
+                              setRoleMenuOpen(false);
+                              addToast({
+                                type: "info",
+                                title: "Role Persona Switched",
+                                message: `Switched active persona to ${r.label} (${r.name})`,
+                              });
+                            }}
+                            className={`w-full text-left px-4 py-2.5 flex items-center justify-between transition-all ${
+                              isSelected
+                                ? "bg-brand-teal/10 text-brand-teal font-semibold border-l-4 border-brand-teal"
+                                : "hover:bg-background-secondary text-ink"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <span className="text-base">{r.icon}</span>
+                              <div>
+                                <p className="text-xs font-semibold leading-tight">{r.label}</p>
+                                <p className="text-[10px] text-ink-muted mt-0.5">{r.name}</p>
+                              </div>
+                            </div>
+                            {isSelected && <CheckCircle className="h-4 w-4 text-brand-teal shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>
